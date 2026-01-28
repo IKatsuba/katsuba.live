@@ -1,5 +1,5 @@
 {
-  "name": "@fixcv/miniflux",
+  "name": "@packages/miniflux",
   "version": "0.0.0-development",
   "exports": "./mod.ts",
   "imports": {}

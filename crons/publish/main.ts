@@ -1,7 +1,6 @@
-import { getEntries, markEntryAsRead } from '@fixcv/miniflux';
-import { bot } from '@fixcv/bot';
+import { getEntries, markEntryAsRead } from '@packages/miniflux';
+import { bot } from '@packages/bot';
 import { processEntry } from './lib/llm.ts';
-import { processMarkdown } from './lib/md.ts';
 import { telegramify } from './lib/utils.ts';
 
 const TELEGRAM_CHAT_ID = Deno.env.get('TELEGRAM_CHAT_ID');
@@ -30,12 +29,8 @@ async function main() {
     const aiResponse = await processEntry(entry);
     console.log('✓ Received AI response');
 
-    console.log('📋 Processing markdown...');
-    const markdown = await processMarkdown(aiResponse.text);
-    console.log('✓ Markdown processed');
-
     console.log('📤 Sending to Telegram...');
-    await sendLongText(markdown);
+    await sendLongText(aiResponse.text);
     console.log('✅ Message sent successfully');
 
     console.log(`📝 Processing entry: ${entry.title} (ID: ${entry.id})`);

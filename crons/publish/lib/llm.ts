@@ -1,5 +1,5 @@
 import { generateText } from 'ai';
-import { Entry } from '@fixcv/miniflux';
+import type { Entry } from '@packages/miniflux';
 
 export function processEntry(entry: Entry) {
   return generateText({

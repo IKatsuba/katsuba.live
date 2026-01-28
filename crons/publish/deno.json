@@ -1,5 +1,5 @@
 {
-  "name": "@fixcv/publish",
+  "name": "@crons/publish",
   "version": "0.0.0-development",
   "exports": "./main.ts",
   "imports": {
