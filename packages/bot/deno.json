@@ -1,0 +1,6 @@
+{
+  "name": "@fixcv/bot",
+  "version": "0.0.0-development",
+  "exports": "./mod.ts",
+  "imports": {}
+}
