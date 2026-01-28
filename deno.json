@@ -7,8 +7,5 @@
     "singleQuote": true
   },
   "workspace": ["packages/*", "crons/*"],
-  "imports": {
-    "@grammyjs/types": "npm:@grammyjs/types@^3.18.0",
-    "grammy": "npm:grammy@^1.34.1"
-  }
+  "imports": {}
 }
