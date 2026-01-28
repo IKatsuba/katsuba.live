@@ -1,21 +1,15 @@
-import { verifySignature } from './lib/signature.ts';
 import { processEntry } from './lib/llm.ts';
 import { evaluateEntry } from './lib/evaluator.ts';
 import { sendToTelegram } from './lib/telegram.ts';
-import type {
-  EntryProcessingResult,
-  NewEntriesPayload,
-  ProcessableEntry,
-  WebhookEntry,
-  WebhookFeed,
-} from './lib/types.ts';
+import {
+  getFeedsWithErrors,
+  getNextUnreadEntry,
+  markAsRead,
+  refreshFeed,
+} from './lib/miniflux.ts';
+import type { MinifluxEntry, ProcessableEntry } from './lib/types.ts';
 
-const PORT = Number(Deno.env.get('PORT')) || 8000;
-
-function mapToProcessableEntry(
-  entry: WebhookEntry,
-  feed: WebhookFeed,
-): ProcessableEntry {
+function mapToProcessableEntry(entry: MinifluxEntry): ProcessableEntry {
   return {
     id: entry.id,
     title: entry.title,
@@ -23,96 +17,96 @@ function mapToProcessableEntry(
     url: entry.url,
     published_at: entry.published_at,
     feed: {
-      title: feed.title,
+      title: entry.feed.title,
     },
   };
 }
 
-async function handleWebhook(request: Request): Promise<Response> {
-  const signature = request.headers.get('X-Miniflux-Signature');
-  const eventType = request.headers.get('X-Miniflux-Event-Type');
-  const body = await request.text();
+async function processOneEntry(): Promise<void> {
+  while (true) {
+    const entry = await getNextUnreadEntry();
 
-  const isValid = await verifySignature(body, signature);
-  if (!isValid) {
-    console.log('Invalid signature');
-    return new Response('Unauthorized', { status: 401 });
-  }
+    if (!entry) {
+      console.log('No unread entries');
+      return;
+    }
 
-  if (eventType !== 'new_entries') {
-    console.log(`Ignoring event type: ${eventType}`);
-    return new Response('OK', { status: 200 });
-  }
+    console.log(`Processing entry: ${entry.title} (ID: ${entry.id})`);
 
-  const payload: NewEntriesPayload = JSON.parse(body);
-  const results: EntryProcessingResult[] = [];
+    const processable = mapToProcessableEntry(entry);
 
-  for (const entry of payload.entries) {
+    const evaluation = await evaluateEntry(processable);
+    console.log(
+      `Entry ${entry.id}: score=${evaluation.score}, reason="${evaluation.reason}"`,
+    );
+
+    if (!evaluation.shouldPublish) {
+      console.log(`Skipping entry ${entry.id}: score below threshold`);
+      await markAsRead([entry.id]);
+      continue;
+    }
+
     try {
-      console.log(`Processing entry: ${entry.title} (ID: ${entry.id})`);
-
-      const processable = mapToProcessableEntry(entry, payload.feed);
-
-      // Step 1: Evaluate interest
-      const evaluation = await evaluateEntry(processable);
-      console.log(
-        `Entry ${entry.id}: score=${evaluation.score}, reason="${evaluation.reason}"`,
-      );
-
-      if (!evaluation.shouldPublish) {
-        console.log(`Skipping entry ${entry.id}: score below threshold`);
-        results.push({
-          id: entry.id,
-          status: 'skipped',
-          score: evaluation.score,
-          reason: evaluation.reason,
-        });
-        continue;
-      }
-
-      // Step 2: Process and publish
       const aiResponse = await processEntry(processable);
       await sendToTelegram(aiResponse.text);
       console.log(`Published entry ${entry.id} to Telegram`);
-
-      results.push({
-        id: entry.id,
-        status: 'published',
-        score: evaluation.score,
-        reason: evaluation.reason,
-      });
+      await markAsRead([entry.id]);
+      return;
     } catch (error) {
       const errorMessage = error instanceof Error
         ? error.message
         : String(error);
       console.error(`Failed to process entry ${entry.id}: ${errorMessage}`);
-      results.push({
-        id: entry.id,
-        status: 'error',
-        error: errorMessage,
-      });
+      throw error;
     }
   }
-
-  return new Response(JSON.stringify({ results }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
 }
 
-function handler(request: Request): Response | Promise<Response> {
-  const url = new URL(request.url);
+async function checkAndRefreshErrorFeeds(): Promise<void> {
+  try {
+    const feedsWithErrors = await getFeedsWithErrors();
 
-  if (url.pathname === '/health' && request.method === 'GET') {
-    return new Response('OK', { status: 200 });
+    if (feedsWithErrors.length === 0) {
+      console.log('No feeds with errors');
+      return;
+    }
+
+    console.log(`Found ${feedsWithErrors.length} feeds with errors`);
+
+    for (const feed of feedsWithErrors) {
+      console.log(
+        `Refreshing feed: ${feed.title} (ID: ${feed.id}, errors: ${feed.parsing_error_count})`,
+      );
+      try {
+        await refreshFeed(feed.id);
+        console.log(`Successfully refreshed feed ${feed.id}`);
+      } catch (error) {
+        const errorMessage = error instanceof Error
+          ? error.message
+          : String(error);
+        console.error(`Failed to refresh feed ${feed.id}: ${errorMessage}`);
+      }
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`Failed to check error feeds: ${errorMessage}`);
   }
-
-  if (url.pathname === '/webhook' && request.method === 'POST') {
-    return handleWebhook(request);
-  }
-
-  return new Response('Not Found', { status: 404 });
 }
 
-console.log(`Webhook server listening on port ${PORT}`);
-Deno.serve({ port: PORT }, handler);
+async function runCronJob(): Promise<void> {
+  console.log(`[${new Date().toISOString()}] Starting cron job...`);
+
+  try {
+    await processOneEntry();
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`Cron job entry processing failed: ${errorMessage}`);
+  }
+
+  await checkAndRefreshErrorFeeds();
+
+  console.log(`[${new Date().toISOString()}] Cron job completed`);
+}
+
+await runCronJob();
+Deno.exit(0);

@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "webhook": "deno --allow-read --allow-env --allow-net apps/webhook/main.ts",
-    "webhook:dev": "deno --env-file --allow-read --allow-env --allow-net --watch apps/webhook/main.ts"
+    "cron:publish": "deno --allow-read --allow-env --allow-net apps/webhook/main.ts",
+    "cron:dev": "deno --env-file --allow-read --allow-env --allow-net apps/webhook/main.ts"
   },
   "fmt": {
     "singleQuote": true

@@ -5,21 +5,21 @@ code in this repository.
 
 ## Project Overview
 
-This is a Deno monorepo for a webhook server that receives RSS feed entries from
-Miniflux and publishes them to a Telegram news channel.
+This is a Deno monorepo for a cron job that fetches RSS feed entries from
+Miniflux API and publishes interesting ones to a Telegram news channel.
 
 ## Commands
 
 ### Development
 
 ```bash
-deno task webhook:dev            # Run webhook server in development mode
+deno task cron:dev               # Run cron job in development mode
 ```
 
 ### Production
 
 ```bash
-deno task webhook                # Run the webhook server
+deno task cron:publish           # Run the cron job
 ```
 
 ### Tests
@@ -38,26 +38,29 @@ deno fmt                         # Format code (uses single quotes)
 
 ### Workspace Packages (`packages/`)
 
+- **@packages/env**: Centralized environment variables with Zod validation.
+  Import `env` to access typed config.
 - **@packages/bot**: Grammy Telegram bot instance. Exports `bot` for sending
   messages.
 
 ### Apps (`apps/`)
 
-- **webhook**: HTTP server that receives Miniflux webhook notifications,
-  processes entries with LLM for Telegram formatting, and posts to a Telegram
-  channel.
-  - `GET /health` - Health check endpoint
-  - `POST /webhook` - Miniflux webhook endpoint (validates HMAC signature)
+- **webhook**: Cron job that runs every 10 minutes to:
+  1. Fetch unread entries from Miniflux API
+  2. Evaluate interest using AI (score 1-5, threshold >= 4)
+  3. Format and publish one interesting entry to Telegram
+  4. Mark processed entries as read
+  5. Refresh feeds with parsing errors
 
 ## Environment Variables
+
+All variables are validated at startup via `@packages/env`.
 
 Required:
 
 - `BOT_TOKEN` - Telegram bot token
 - `TELEGRAM_CHAT_ID` - Target channel for publishing
-- `WEBHOOK_SECRET` - Miniflux webhook secret for HMAC-SHA256 signature
-  validation
-
-Optional:
-
-- `PORT` - Server port (default: 8000)
+- `MINIFLUX_API_URL` - Miniflux instance URL (e.g.,
+  https://miniflux.example.com)
+- `MINIFLUX_API_KEY` - Miniflux API key for X-Auth-Token header
+- `AI_GATEWAY_API_KEY` - AI Gateway API key for LLM processing
