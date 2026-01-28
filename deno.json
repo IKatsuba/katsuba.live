@@ -7,5 +7,7 @@
     "singleQuote": true
   },
   "workspace": ["packages/*", "apps/*"],
-  "imports": {}
+  "imports": {
+    "zod": "npm:zod@^3.23.0"
+  }
 }

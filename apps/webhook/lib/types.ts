@@ -33,3 +33,33 @@ export type ProcessableEntry = {
     title: string;
   };
 };
+
+/** Результат оценки интересности новости */
+export type EvaluationResult = {
+  /** Оценка от 1 до 5 */
+  score: number;
+  /** Причина оценки */
+  reason: string;
+  /** Нужно ли публиковать (score >= 4) */
+  shouldPublish: boolean;
+};
+
+/** Результат обработки одной новости */
+export type EntryProcessingResult =
+  | {
+    id: number;
+    status: 'published';
+    score: number;
+    reason: string;
+  }
+  | {
+    id: number;
+    status: 'skipped';
+    score: number;
+    reason: string;
+  }
+  | {
+    id: number;
+    status: 'error';
+    error: string;
+  };

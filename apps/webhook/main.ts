@@ -1,7 +1,9 @@
 import { verifySignature } from './lib/signature.ts';
 import { processEntry } from './lib/llm.ts';
+import { evaluateEntry } from './lib/evaluator.ts';
 import { sendToTelegram } from './lib/telegram.ts';
 import type {
+  EntryProcessingResult,
   NewEntriesPayload,
   ProcessableEntry,
   WebhookEntry,
@@ -43,25 +45,52 @@ async function handleWebhook(request: Request): Promise<Response> {
   }
 
   const payload: NewEntriesPayload = JSON.parse(body);
-  const results: { id: number; success: boolean; error?: string }[] = [];
+  const results: EntryProcessingResult[] = [];
 
   for (const entry of payload.entries) {
     try {
       console.log(`Processing entry: ${entry.title} (ID: ${entry.id})`);
 
       const processable = mapToProcessableEntry(entry, payload.feed);
+
+      // Step 1: Evaluate interest
+      const evaluation = await evaluateEntry(processable);
+      console.log(
+        `Entry ${entry.id}: score=${evaluation.score}, reason="${evaluation.reason}"`,
+      );
+
+      if (!evaluation.shouldPublish) {
+        console.log(`Skipping entry ${entry.id}: score below threshold`);
+        results.push({
+          id: entry.id,
+          status: 'skipped',
+          score: evaluation.score,
+          reason: evaluation.reason,
+        });
+        continue;
+      }
+
+      // Step 2: Process and publish
       const aiResponse = await processEntry(processable);
-
       await sendToTelegram(aiResponse.text);
-      console.log(`Sent entry ${entry.id} to Telegram`);
+      console.log(`Published entry ${entry.id} to Telegram`);
 
-      results.push({ id: entry.id, success: true });
+      results.push({
+        id: entry.id,
+        status: 'published',
+        score: evaluation.score,
+        reason: evaluation.reason,
+      });
     } catch (error) {
       const errorMessage = error instanceof Error
         ? error.message
         : String(error);
       console.error(`Failed to process entry ${entry.id}: ${errorMessage}`);
-      results.push({ id: entry.id, success: false, error: errorMessage });
+      results.push({
+        id: entry.id,
+        status: 'error',
+        error: errorMessage,
+      });
     }
   }
 
