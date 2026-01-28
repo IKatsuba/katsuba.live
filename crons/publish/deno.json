@@ -1,0 +1,10 @@
+{
+  "name": "@fixcv/publish",
+  "version": "0.0.0-development",
+  "exports": "./main.ts",
+  "imports": {
+    "@ai-sdk/openai": "npm:@ai-sdk/openai@^2.0.6",
+    "ai": "npm:ai@^5.0.8",
+    "telegramify-markdown": "npm:telegramify-markdown@^1.2.2"
+  }
+}

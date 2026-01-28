@@ -1,17 +1,14 @@
 {
   "tasks": {
-    "cron:publish": "deno --allow-read --allow-env --allow-net crons/publish/publish.ts",
-    "cron:publish:dev": "deno --env-file --allow-read --allow-env --allow-net --watch crons/publish/publish.ts"
+    "cron:publish": "deno --allow-read --allow-env --allow-net crons/publish/main.ts",
+    "cron:publish:dev": "deno --env-file --allow-read --allow-env --allow-net --watch crons/publish/main.ts"
   },
   "fmt": {
     "singleQuote": true
   },
-  "workspace": ["packages/*"],
+  "workspace": ["packages/*", "crons/*"],
   "imports": {
-    "@ai-sdk/openai": "npm:@ai-sdk/openai@^2.0.6",
     "@grammyjs/types": "npm:@grammyjs/types@^3.18.0",
-    "ai": "npm:ai@^5.0.8",
-    "grammy": "npm:grammy@^1.34.1",
-    "telegramify-markdown": "npm:telegramify-markdown@^1.2.2"
+    "grammy": "npm:grammy@^1.34.1"
   }
 }
