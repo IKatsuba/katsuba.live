@@ -1,14 +1,13 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@ai-sdk/openai@^2.0.6": "2.0.89_zod@4.3.6",
-    "npm:ai@^5.0.8": "5.0.123_zod@4.3.6",
-    "npm:grammy@^1.34.1": "1.39.3",
-    "npm:telegramify-markdown@^1.2.2": "1.3.2"
+    "npm:ai@^6.0.57": "6.0.57_zod@4.3.6",
+    "npm:grammy@^1.39.3": "1.39.3",
+    "npm:telegramify-markdown@^1.3.2": "1.3.2"
   },
   "npm": {
-    "@ai-sdk/gateway@2.0.29_zod@4.3.6": {
-      "integrity": "sha512-1b7E9F/B5gex/1uCkhs+sGIbH0KsZOItHnNz3iY5ir+nc4ZUA6WOU5Cu2w1USlc+3UVbhf+H+iNLlxVjLe4VvQ==",
+    "@ai-sdk/gateway@3.0.25_zod@4.3.6": {
+      "integrity": "sha512-j0AQeA7hOVqwImykQlganf/Euj3uEXf0h3G0O4qKTDpEwE+EZGIPnVimCWht5W91lAetPZSfavDyvfpuPDd2PQ==",
       "dependencies": [
         "@ai-sdk/provider",
         "@ai-sdk/provider-utils",
@@ -16,16 +15,8 @@
         "zod"
       ]
     },
-    "@ai-sdk/openai@2.0.89_zod@4.3.6": {
-      "integrity": "sha512-4+qWkBCbL9HPKbgrUO/F2uXZ8GqrYxHa8SWEYIzxEJ9zvWw3ISr3t1/27O1i8MGSym+PzEyHBT48EV4LAwWaEw==",
-      "dependencies": [
-        "@ai-sdk/provider",
-        "@ai-sdk/provider-utils",
-        "zod"
-      ]
-    },
-    "@ai-sdk/provider-utils@3.0.20_zod@4.3.6": {
-      "integrity": "sha512-iXHVe0apM2zUEzauqJwqmpC37A5rihrStAih5Ks+JE32iTe4LZ58y17UGBjpQQTCRw9YxMeo2UFLxLpBluyvLQ==",
+    "@ai-sdk/provider-utils@4.0.10_zod@4.3.6": {
+      "integrity": "sha512-VeDAiCH+ZK8Xs4hb9Cw7pHlujWNL52RKe8TExOkrw6Ir1AmfajBZTb9XUdKOZO08RwQElIKA8+Ltm+Gqfo8djQ==",
       "dependencies": [
         "@ai-sdk/provider",
         "@standard-schema/spec",
@@ -33,8 +24,8 @@
         "zod"
       ]
     },
-    "@ai-sdk/provider@2.0.1": {
-      "integrity": "sha512-KCUwswvsC5VsW2PWFqF8eJgSCu5Ysj7m1TxiHTVA6g7k360bk0RNQENT8KTMAYEs+8fWPD3Uu4dEmzGHc+jGng==",
+    "@ai-sdk/provider@3.0.5": {
+      "integrity": "sha512-2Xmoq6DBJqmSl80U6V9z5jJSJP7ehaJJQMy2iFUqTay06wdCqTnPVBBQbtEL8RCChenL+q5DC5H5WzU3vV3v8w==",
       "dependencies": [
         "json-schema"
       ]
@@ -66,8 +57,8 @@
         "event-target-shim"
       ]
     },
-    "ai@5.0.123_zod@4.3.6": {
-      "integrity": "sha512-V3Imb0tg0pHCa6a/VsoW/FZpT07mwUw/4Hj6nexJC1Nvf1eyKQJyaYVkl+YTLnA8cKQSUkoarKhXWbFy4CSgjw==",
+    "ai@6.0.57_zod@4.3.6": {
+      "integrity": "sha512-5wYcMQmOaNU71wGv4XX1db3zvn4uLjLbTKIo6cQZPWOJElA0882XI7Eawx6TCd5jbjOvKMIP+KLWbpVomAFT2g==",
       "dependencies": [
         "@ai-sdk/gateway",
         "@ai-sdk/provider",
@@ -416,14 +407,13 @@
     "members": {
       "apps/webhook": {
         "dependencies": [
-          "npm:@ai-sdk/openai@^2.0.6",
-          "npm:ai@^5.0.8",
-          "npm:telegramify-markdown@^1.2.2"
+          "npm:ai@^6.0.57",
+          "npm:telegramify-markdown@^1.3.2"
         ]
       },
       "packages/bot": {
         "dependencies": [
-          "npm:grammy@^1.34.1"
+          "npm:grammy@^1.39.3"
         ]
       }
     }
