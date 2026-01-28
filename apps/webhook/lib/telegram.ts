@@ -17,7 +17,7 @@ export async function sendToTelegram(text: string): Promise<void> {
     await bot.api.sendMessage(env.TELEGRAM_CHAT_ID, telegramify(chunk), {
       parse_mode: 'MarkdownV2',
       disable_notification: true,
-      link_preview_options: { is_disabled: true },
+      link_preview_options: { is_disabled: false },
     });
   }
 }
