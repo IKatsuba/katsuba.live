@@ -1,7 +1,7 @@
 import { generateText } from 'ai';
-import type { Entry } from '@packages/miniflux';
+import type { ProcessableEntry } from './types.ts';
 
-export function processEntry(entry: Entry) {
+export function processEntry(entry: ProcessableEntry) {
   return generateText({
     model: 'openai/gpt-5-mini',
     temperature: 0.7,

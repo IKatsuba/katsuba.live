@@ -1,11 +1,11 @@
 {
   "tasks": {
-    "cron:publish": "deno --allow-read --allow-env --allow-net crons/publish/main.ts",
-    "cron:publish:dev": "deno --env-file --allow-read --allow-env --allow-net --watch crons/publish/main.ts"
+    "webhook": "deno --allow-read --allow-env --allow-net apps/webhook/main.ts",
+    "webhook:dev": "deno --env-file --allow-read --allow-env --allow-net --watch apps/webhook/main.ts"
   },
   "fmt": {
     "singleQuote": true
   },
-  "workspace": ["packages/*", "crons/*"],
+  "workspace": ["packages/*", "apps/*"],
   "imports": {}
 }

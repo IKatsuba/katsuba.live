@@ -1,5 +1,5 @@
 {
-  "name": "@crons/publish",
+  "name": "@apps/webhook",
   "version": "0.0.0-development",
   "exports": "./main.ts",
   "imports": {

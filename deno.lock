@@ -414,7 +414,7 @@
   },
   "workspace": {
     "members": {
-      "crons/publish": {
+      "apps/webhook": {
         "dependencies": [
           "npm:@ai-sdk/openai@^2.0.6",
           "npm:ai@^5.0.8",

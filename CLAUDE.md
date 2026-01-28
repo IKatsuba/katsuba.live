@@ -5,21 +5,21 @@ code in this repository.
 
 ## Project Overview
 
-This is a Deno monorepo for a cron job that publishes RSS feed entries to a
-Telegram news channel.
+This is a Deno monorepo for a webhook server that receives RSS feed entries from
+Miniflux and publishes them to a Telegram news channel.
 
 ## Commands
 
 ### Development
 
 ```bash
-deno task cron:publish:dev       # Run publish cron in development mode
+deno task webhook:dev            # Run webhook server in development mode
 ```
 
 ### Production
 
 ```bash
-deno task cron:publish           # Run the publish cron job once
+deno task webhook                # Run the webhook server
 ```
 
 ### Tests
@@ -41,19 +41,23 @@ deno fmt                         # Format code (uses single quotes)
 - **@packages/bot**: Grammy Telegram bot instance. Exports `bot` for sending
   messages.
 
-- **@packages/miniflux**: Client for Miniflux RSS reader API. Used by the publish
-  cron to fetch unread entries.
+### Apps (`apps/`)
 
-### Cron Jobs (`crons/`)
-
-- **publish**: Fetches unread entries from Miniflux, processes them with LLM for
-  Telegram formatting, and posts to a Telegram channel.
+- **webhook**: HTTP server that receives Miniflux webhook notifications,
+  processes entries with LLM for Telegram formatting, and posts to a Telegram
+  channel.
+  - `GET /health` - Health check endpoint
+  - `POST /webhook` - Miniflux webhook endpoint (validates HMAC signature)
 
 ## Environment Variables
 
 Required:
 
 - `BOT_TOKEN` - Telegram bot token
-- `MINIFLUX_URL` - Miniflux server URL
-- `MINIFLUX_TOKEN` - Miniflux API token
 - `TELEGRAM_CHAT_ID` - Target channel for publishing
+- `WEBHOOK_SECRET` - Miniflux webhook secret for HMAC-SHA256 signature
+  validation
+
+Optional:
+
+- `PORT` - Server port (default: 8000)
