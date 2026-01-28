@@ -2,12 +2,16 @@
 
 ## Overview
 
-Реализация двухэтапной обработки новостей с AI-оценкой интересности перед публикацией. Новости с оценкой 4+ переписываются в человечном стиле и публикуются в Telegram.
+Реализация двухэтапной обработки новостей с AI-оценкой интересности перед
+публикацией. Новости с оценкой 4+ переписываются в человечном стиле и
+публикуются в Telegram.
 
 ### Key Changes
 
-1. Новый модуль `lib/evaluator.ts` — оценка интересности через `generateObject` с Zod-схемой
-2. Обновление `lib/llm.ts` — новый промпт для человечного стиля и оформления ссылок
+1. Новый модуль `lib/evaluator.ts` — оценка интересности через `generateObject`
+   с Zod-схемой
+2. Обновление `lib/llm.ts` — новый промпт для человечного стиля и оформления
+   ссылок
 3. Расширение `lib/types.ts` — новые типы для результата оценки и обработки
 4. Модификация `main.ts` — интеграция двухэтапной обработки с логированием
 
@@ -84,7 +88,7 @@ sequenceDiagram
 
 import { generateObject } from 'ai';
 import { z } from 'zod';
-import type { ProcessableEntry, EvaluationResult } from './types.ts';
+import type { EvaluationResult, ProcessableEntry } from './types.ts';
 
 const EvaluationSchema = z.object({
   score: z.number().min(1).max(5).describe('Оценка интересности от 1 до 5'),
@@ -143,7 +147,8 @@ export function processEntry(entry: ProcessableEntry) {
   return generateText({
     model: 'openai/gpt-5-mini',
     temperature: 0.7,
-    system: `Ты автор популярного IT Telegram-канала. Пишешь интересно, живо и доступно.
+    system:
+      `Ты автор популярного IT Telegram-канала. Пишешь интересно, живо и доступно.
 
 СТИЛЬ:
 - Пиши как живой человек, а не робот
@@ -257,34 +262,34 @@ export type EvaluationResult = {
 /** Результат обработки одной новости */
 export type EntryProcessingResult =
   | {
-      id: number;
-      status: 'published';
-      score: number;
-      reason: string;
-    }
+    id: number;
+    status: 'published';
+    score: number;
+    reason: string;
+  }
   | {
-      id: number;
-      status: 'skipped';
-      score: number;
-      reason: string;
-    }
+    id: number;
+    status: 'skipped';
+    score: number;
+    reason: string;
+  }
   | {
-      id: number;
-      status: 'error';
-      error: string;
-    };
+    id: number;
+    status: 'error';
+    error: string;
+  };
 ```
 
 ## Error Handling
 
 ### Error Types and Handling
 
-| Error | Handling | Log Message |
-|-------|----------|-------------|
-| Evaluation API error | Skip entry, continue | `Failed to evaluate entry {id}: {error}` |
-| Processing API error | Skip entry, continue | `Failed to process entry {id}: {error}` |
-| Telegram send error | Mark as error | `Failed to send entry {id}: {error}` |
-| Invalid score (not 1-5) | Zod validation fails | Caught by generateObject |
+| Error                   | Handling             | Log Message                              |
+| ----------------------- | -------------------- | ---------------------------------------- |
+| Evaluation API error    | Skip entry, continue | `Failed to evaluate entry {id}: {error}` |
+| Processing API error    | Skip entry, continue | `Failed to process entry {id}: {error}`  |
+| Telegram send error     | Mark as error        | `Failed to send entry {id}: {error}`     |
+| Invalid score (not 1-5) | Zod validation fails | Caught by generateObject                 |
 
 ### Fallback Strategy
 
@@ -357,17 +362,18 @@ Deno.test('webhook publishes high-score entries', async () => {
 1. **Пустой контент** — Оценка должна вернуть низкий балл (1-2)
 2. **Очень длинный контент** — Truncate перед отправкой в LLM если нужно
 3. **Контент на других языках** — LLM должен перевести и оценить
-4. **Дубликаты** — Не обрабатываем на уровне evaluator (Miniflux отвечает за дедупликацию)
+4. **Дубликаты** — Не обрабатываем на уровне evaluator (Miniflux отвечает за
+   дедупликацию)
 
 ## File Changes Summary
 
-| File | Action | Description |
-|------|--------|-------------|
-| `lib/evaluator.ts` | Create | Новый модуль оценки интересности |
-| `lib/types.ts` | Modify | Добавить `EvaluationResult`, `EntryProcessingResult` |
-| `lib/llm.ts` | Modify | Обновить промпт для человечного стиля |
-| `main.ts` | Modify | Интегрировать двухэтапную обработку |
-| `deno.json` | Modify | Добавить зависимость `zod` |
+| File               | Action | Description                                          |
+| ------------------ | ------ | ---------------------------------------------------- |
+| `lib/evaluator.ts` | Create | Новый модуль оценки интересности                     |
+| `lib/types.ts`     | Modify | Добавить `EvaluationResult`, `EntryProcessingResult` |
+| `lib/llm.ts`       | Modify | Обновить промпт для человечного стиля                |
+| `main.ts`          | Modify | Интегрировать двухэтапную обработку                  |
+| `deno.json`        | Modify | Добавить зависимость `zod`                           |
 
 ## Dependencies
 

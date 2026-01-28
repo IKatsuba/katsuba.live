@@ -70,7 +70,8 @@ const weatherTool = tool({
 
 ## `generateObject` → `generateText` with `output`
 
-`generateObject` is deprecated. Use `generateText` with the `output` option instead.
+`generateObject` is deprecated. Use `generateText` with the `output` option
+instead.
 
 ```typescript
 // ❌ Deprecated
@@ -171,7 +172,9 @@ const result = await generateText({
 
 ## `toDataStreamResponse` → `toUIMessageStreamResponse`
 
-When using `useChat` on the frontend, use `toUIMessageStreamResponse()` instead of `toDataStreamResponse()`. The UI message stream format is designed to work with the chat UI components and handles message state correctly.
+When using `useChat` on the frontend, use `toUIMessageStreamResponse()` instead
+of `toDataStreamResponse()`. The UI message stream format is designed to work
+with the chat UI components and handles message state correctly.
 
 ```typescript
 // ❌ Incorrect (when using useChat)
@@ -191,7 +194,8 @@ return result.toUIMessageStreamResponse();
 
 ## Removed managed input state in `useChat`
 
-The `useChat` hook no longer manages input state internally. You must now manage input state manually.
+The `useChat` hook no longer manages input state internally. You must now manage
+input state manually.
 
 ```tsx
 // ❌ Deprecated
@@ -209,7 +213,7 @@ export default function Page() {
   return (
     <form onSubmit={handleSubmit}>
       <input value={input} onChange={handleInputChange} />
-      <button type="submit">Send</button>
+      <button type='submit'>Send</button>
     </form>
   );
 }
@@ -225,7 +229,7 @@ export default function Page() {
     transport: new DefaultChatTransport({ api: '/api/chat' }),
   });
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     sendMessage({ text: input });
     setInput('');
@@ -233,8 +237,8 @@ export default function Page() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input value={input} onChange={e => setInput(e.target.value)} />
-      <button type="submit">Send</button>
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <button type='submit'>Send</button>
     </form>
   );
 }
@@ -242,7 +246,9 @@ export default function Page() {
 
 ## `tool-invocation` → `tool-{toolName}` (typed tool parts)
 
-When rendering messages with `useChat`, use the typed tool part names (`tool-{toolName}`) instead of the generic `tool-invocation` type. This provides better type safety and access to tool-specific input/output types.
+When rendering messages with `useChat`, use the typed tool part names
+(`tool-{toolName}`) instead of the generic `tool-invocation` type. This provides
+better type safety and access to tool-specific input/output types.
 
 > For end-to-end type-safety, see [Type-Safe Agents](type-safe-agents.md).
 
@@ -270,7 +276,7 @@ Typed tool parts also use different property names:
 
 // ✅ Correct - using typed tool parts (recommended)
 {
-  message.parts.map(part => {
+  message.parts.map((part) => {
     switch (part.type) {
       case 'text':
         return part.text;
@@ -288,7 +294,7 @@ Typed tool parts also use different property names:
 import { isToolUIPart } from 'ai';
 
 {
-  message.parts.map(part => {
+  message.parts.map((part) => {
     if (part.type === 'text') {
       return part.text;
     }
@@ -306,7 +312,8 @@ import { isToolUIPart } from 'ai';
 
 ## `useChat` state-dependent property access
 
-Tool part properties are only available in certain states. TypeScript will error if you access them without checking state first.
+Tool part properties are only available in certain states. TypeScript will error
+if you access them without checking state first.
 
 ```tsx
 // ❌ Incorrect - input may be undefined during streaming

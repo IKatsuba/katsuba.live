@@ -1,9 +1,4 @@
 import { Bot } from 'grammy';
+import { env } from '@packages/env';
 
-const botToken = Deno.env.get('BOT_TOKEN');
-
-if (!botToken) {
-  throw new Error('BOT_TOKEN is not set');
-}
-
-export const bot = new Bot(botToken);
+export const bot = new Bot(env.BOT_TOKEN);
