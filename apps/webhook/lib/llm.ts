@@ -3,7 +3,7 @@ import type { ProcessableEntry } from './types.ts';
 
 export function processEntry(entry: ProcessableEntry) {
   return generateText({
-    model: 'openai/gpt-5.2',
+    model: 'openai/gpt-5-mini',
     temperature: 0.7,
     system: `Ты автор популярного IT Telegram-канала.
 
