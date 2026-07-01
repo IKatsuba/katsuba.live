@@ -4,6 +4,6 @@
   "exports": "./main.ts",
   "imports": {
     "ai": "npm:ai@^6.0.57",
-    "telegramify-markdown": "npm:telegramify-markdown@^1.3.2"
+    "md-to-telegram": "npm:md-to-telegram@^0.1.1"
   }
 }
