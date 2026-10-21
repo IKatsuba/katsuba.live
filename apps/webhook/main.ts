@@ -1,6 +1,5 @@
 import { processEntry } from './lib/llm.ts';
 import { evaluateEntry } from './lib/evaluator.ts';
-import { sendToTelegram } from './lib/telegram.ts';
 import {
   getFeedsWithErrors,
   getNextUnreadEntry,
@@ -47,10 +46,15 @@ async function processOneEntry(): Promise<void> {
     }
 
     try {
-      const aiResponse = await processEntry(processable);
-      await sendToTelegram(aiResponse.text);
-      console.log(`Published entry ${entry.id} to Telegram`);
+      const result = await processEntry(processable);
       await markAsRead([entry.id]);
+
+      if (result.status === 'rejected') {
+        console.log(`Writer rejected entry ${entry.id}: "${result.reason}"`);
+        continue;
+      }
+
+      console.log(`Published entry ${entry.id} to Telegram`);
       return;
     } catch (error) {
       const errorMessage = error instanceof Error

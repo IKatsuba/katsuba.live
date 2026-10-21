@@ -29,6 +29,24 @@ export async function getNextUnreadEntry(): Promise<MinifluxEntry | null> {
   return data.entries[0] ?? null;
 }
 
+export async function fetchEntryContent(entryId: number): Promise<string> {
+  const url = new URL(
+    `/v1/entries/${entryId}/fetch-content`,
+    env.MINIFLUX_API_URL,
+  );
+
+  const response = await fetch(url, { headers });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch content for entry ${entryId}: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const data: { content: string } = await response.json();
+  return data.content;
+}
+
 export async function markAsRead(entryIds: number[]): Promise<void> {
   const url = new URL('/v1/entries', env.MINIFLUX_API_URL);
 
