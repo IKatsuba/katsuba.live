@@ -11,7 +11,7 @@ export type AgentRun = {
 export async function runAgent(options: {
   label: string;
   model: FxModelOptions;
-  instructions: string;
+  instructions: string | string[];
   tools: FxTool[];
   prompt: string;
 }): Promise<AgentRun> {

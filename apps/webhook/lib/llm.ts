@@ -1,4 +1,5 @@
 import { runAgent } from './agent.ts';
+import { AUDIENCE } from './audience.ts';
 import { fetchEntryContent, markAsRead } from './miniflux.ts';
 import { sendToTelegram } from './telegram.ts';
 import { validatePost } from './validate.ts';
@@ -23,7 +24,9 @@ export async function processEntry(
   const { stopReason } = await runAgent({
     label: `write:${entry.id}`,
     model: { id: 'anthropic/claude-sonnet-5.5', effort: 'high' },
-    instructions: `Ты автор популярного IT Telegram-канала.
+    instructions: [
+      AUDIENCE,
+      `Ты автор популярного IT Telegram-канала. Пиши для этой аудитории: объясняй, почему новость важна именно ей.
 
 ФОРМАТ ПОСТА:
 - Эмодзи + заголовок (он либо жирный, либо заголовк)
@@ -56,6 +59,7 @@ export async function processEntry(
 2. Напиши пост и проверь его через validate_post. Исправляй и проверяй снова, пока проверка не пройдёт.
 3. Опубликуй ровно проверенный текст через publish_post. Публикуй один раз.
 4. Если после чтения полной статьи понятно, что публиковать нечего (реклама, пейволл, пустая страница, нет сути), вызови reject_entry с причиной вместо публикации.`,
+    ],
     tools: [
       {
         name: 'fetch_full_article',
