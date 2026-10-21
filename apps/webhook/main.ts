@@ -47,10 +47,10 @@ async function processOneEntry(): Promise<void> {
 
     try {
       const result = await processEntry(processable);
-      await markAsRead([entry.id]);
 
       if (result.status === 'rejected') {
         console.log(`Writer rejected entry ${entry.id}: "${result.reason}"`);
+        await markAsRead([entry.id]);
         continue;
       }
 

@@ -1,5 +1,5 @@
 import { runAgent } from './agent.ts';
-import { fetchEntryContent } from './miniflux.ts';
+import { fetchEntryContent, markAsRead } from './miniflux.ts';
 import { sendToTelegram } from './telegram.ts';
 import { validatePost } from './validate.ts';
 import type { ProcessableEntry } from './types.ts';
@@ -96,6 +96,8 @@ export async function processEntry(
           }
           await sendToTelegram(markdown);
           result = { status: 'published' };
+          // Mark read right away so a later failure in the turn can't republish it
+          await markAsRead([entry.id]);
           return 'Published.';
         },
       },
