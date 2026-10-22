@@ -45,7 +45,7 @@ export async function runAgent(options: {
       } else if (event.type === 'tool_end') {
         console.log(
           `[${options.label}] ← ${event.name}${
-            event.isError ? ' (error)' : ''
+            event.isError ? ` (error): ${event.content ?? ''}` : ''
           }`,
         );
       }

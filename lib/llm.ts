@@ -21,7 +21,7 @@ export async function processEntry(
 ): Promise<PublishResult> {
   let result: PublishResult | null = null;
 
-  const { stopReason } = await runAgent({
+  const { stopReason, text } = await runAgent({
     label: `write:${entry.id}`,
     model: { id: 'anthropic/claude-sonnet-5.5', effort: 'high' },
     instructions: [
@@ -141,7 +141,7 @@ ${entry.content}`,
 
   if (!result) {
     throw new Error(
-      `Writer finished without publishing or rejecting entry ${entry.id} (stop=${stopReason})`,
+      `Writer finished without publishing or rejecting entry ${entry.id} (stop=${stopReason}): ${text.trim().slice(-500)}`,
     );
   }
 
