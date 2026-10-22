@@ -10,6 +10,7 @@
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
     "grammy": "^1.44.0",
+    "ipaddr.js": "^2.5.0",
     "libfx": "0.0.14",
     "linkedom": "^0.18.12",
     "md-to-telegram": "^0.1.1",

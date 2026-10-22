@@ -1,5 +1,5 @@
 import { lookup } from 'node:dns';
-import { BlockList, isIP } from 'node:net';
+import ipaddr from 'ipaddr.js';
 import { Readability } from '@mozilla/readability';
 import { parseHTML } from 'linkedom';
 import {
@@ -63,36 +63,17 @@ export async function markAsRead(entryId: string): Promise<void> {
 const MAX_ARTICLE_BYTES = 5 * 1024 * 1024;
 const MAX_REDIRECTS = 5;
 
-const privateRanges = new BlockList();
-for (const [address, prefix] of [
-  ['0.0.0.0', 8],
-  ['10.0.0.0', 8],
-  ['100.64.0.0', 10],
-  ['127.0.0.0', 8],
-  ['169.254.0.0', 16],
-  ['172.16.0.0', 12],
-  ['192.168.0.0', 16],
-  ['224.0.0.0', 4],
-] as const) {
-  privateRanges.addSubnet(address, prefix, 'ipv4');
-}
-for (const [address, prefix] of [
-  ['::', 128],
-  ['::1', 128],
-  ['fc00::', 7],
-  ['fe80::', 10],
-  ['ff00::', 8],
-] as const) {
-  privateRanges.addSubnet(address, prefix, 'ipv6');
-}
+// Anything but a public unicast address: private, loopback, link-local,
+// reserved, NAT64/6to4/Teredo and the rest of ipaddr.js's special ranges.
+// ipaddr.process unwraps IPv4-mapped IPv6 so it is judged as IPv4; the
+// deprecated IPv4-compatible ::/96 is not a range of its own there.
+const ipv4Compatible = ipaddr.parseCIDR('::/96');
 
 function isPrivateAddress(address: string): boolean {
-  const mapped = address.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i)?.[1];
-  if (mapped) return isPrivateAddress(mapped);
-  const family = isIP(address);
-  return (
-    family !== 0 && privateRanges.check(address, family === 4 ? 'ipv4' : 'ipv6')
-  );
+  if (!ipaddr.isValid(address)) return false;
+  const parsed = ipaddr.process(address);
+  if (parsed.kind() === 'ipv6' && parsed.match(ipv4Compatible)) return true;
+  return parsed.range() !== 'unicast';
 }
 
 // Every connection resolves through here, so a hostname that points inside
