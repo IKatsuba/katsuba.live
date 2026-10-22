@@ -56,7 +56,7 @@ async function processOneEntry(): Promise<void> {
     }
 
     try {
-      const result = await processEntry(processable);
+      const result = await processEntry(processable, evaluation.reason);
 
       if (result.status === 'rejected') {
         console.log(`Writer rejected entry ${entry.id}: "${result.reason}"`);

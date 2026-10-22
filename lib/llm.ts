@@ -17,6 +17,7 @@ const postSchema = {
 
 export async function processEntry(
   entry: ProcessableEntry,
+  editorNote: string,
 ): Promise<PublishResult> {
   let result: PublishResult | null = null;
 
@@ -54,12 +55,13 @@ export async function processEntry(
 [Читать](https://example.com/deepSignal)
 
 КАК РАБОТАТЬ:
-1. Если текст из RSS короткий или обрезан, загрузи полную статью через fetch_full_article.
+1. Если текст из RSS короткий или обрезан, загрузи полную статью через fetch_full_article. Если она не загрузилась (сайт закрыт для ботов) или в ней мало сути, найди оригинал или подробности через web_search. Пиши только то, что подтверждено статьёй, поиском или заметкой редактора.
 2. Напиши пост и проверь его через validate_post. Исправляй и проверяй снова, пока проверка не пройдёт.
 3. Опубликуй ровно проверенный текст через publish_post. Публикуй один раз.
-4. Если после чтения полной статьи понятно, что публиковать нечего (реклама, пейволл, пустая страница, нет сути), вызови reject_entry с причиной вместо публикации.`,
+4. Если и после статьи и поиска понятно, что публиковать нечего (реклама, пейволл, пустая страница, нет сути), вызови reject_entry с причиной вместо публикации.`,
     ],
     tools: [
+      { name: 'web_search', providerExecuted: true },
       {
         name: 'fetch_full_article',
         description:
@@ -130,6 +132,9 @@ export async function processEntry(
 Источник: ${entry.feed.title}
 URL: ${entry.url}
 Дата: ${entry.published_at}
+
+Заметка редактора, который отобрал новость (он мог проверить детали поиском):
+${editorNote}
 
 ${entry.content}`,
   });
