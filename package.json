@@ -3,12 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "cron:dev": "tsx --env-file=.env scripts/run.ts",
+    "cron:dev": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/run.ts",
     "typecheck": "tsc",
     "format": "prettier --write ."
   },
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
+    "@vercel/oidc": "^4.0.3",
     "grammy": "^1.44.0",
     "ipaddr.js": "^2.5.0",
     "libfx": "0.0.14",

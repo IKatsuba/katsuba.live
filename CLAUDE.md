@@ -13,7 +13,7 @@ channel. Node.js on Vercel Functions; Bun is the package manager.
 
 ```bash
 bun install
-bun run cron:dev                 # One cron run locally, env from .env
+bun run cron:dev                 # One cron run locally, env from .env and .env.local
 bun run typecheck                # tsc
 bun run format                   # prettier (single quotes)
 ```
@@ -46,7 +46,8 @@ Validated at startup via `lib/env.ts`:
 - `TELEGRAM_CHAT_ID` - Target channel for publishing
 - `RSSIFY_API_URL` - rssify instance URL (https://rss.katsuba.dev)
 - `RSSIFY_API_KEY` - rssify API key, sent as `x-api-key`
-- `AI_GATEWAY_API_KEY` - AI Gateway API key for LLM processing
+- `AI_GATEWAY_API_KEY` - optional AI Gateway key; without it the Vercel OIDC
+  token is used (`VERCEL_OIDC_TOKEN` locally, from `vercel env pull`)
 
 Checked by `api/cron.ts` only:
 

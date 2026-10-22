@@ -1,3 +1,4 @@
+import { getVercelOidcToken } from '@vercel/oidc';
 import { createFxEngine, type FxModelOptions, type FxTool } from 'libfx';
 import { env } from './env.js';
 
@@ -16,7 +17,9 @@ export async function runAgent(options: {
   prompt: string;
 }): Promise<AgentRun> {
   const engine = await createFxEngine({
-    apiKey: env.AI_GATEWAY_API_KEY,
+    // The OIDC token arrives with each request on Vercel and in .env.local
+    // after `vercel env pull` locally
+    apiKey: env.AI_GATEWAY_API_KEY ?? (await getVercelOidcToken()),
     model: options.model,
     instructions: options.instructions,
     tools: options.tools,
