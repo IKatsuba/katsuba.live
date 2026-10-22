@@ -1,9 +1,0 @@
-{
-  "name": "@apps/webhook",
-  "version": "0.0.0-development",
-  "exports": "./main.ts",
-  "imports": {
-    "libfx": "npm:libfx@0.0.14",
-    "md-to-telegram": "npm:md-to-telegram@^0.1.1"
-  }
-}

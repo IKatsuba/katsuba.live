@@ -1,5 +1,4 @@
-export const AUDIENCE =
-  `Channel audience: practicing software engineers of mixed level, from junior to senior.
+export const AUDIENCE = `Channel audience: practicing software engineers of mixed level, from junior to senior.
 
 Core topics:
 - TypeScript and Dart: the languages themselves, their compilers, tooling and ecosystems (the channel's main focus)

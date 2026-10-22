@@ -5,62 +5,49 @@ code in this repository.
 
 ## Project Overview
 
-This is a Deno monorepo for a cron job that fetches RSS feed entries from
-Miniflux API and publishes interesting ones to a Telegram news channel.
+A Vercel cron job that reads unread entries from rssify
+(https://rss.katsuba.dev) and publishes interesting ones to a Telegram news
+channel. Node.js on Vercel Functions; Bun is the package manager.
 
 ## Commands
 
-### Development
-
 ```bash
-deno task cron:dev               # Run cron job in development mode
-```
-
-### Production
-
-```bash
-deno task cron:publish           # Run the cron job
-```
-
-### Tests
-
-```bash
-deno test --allow-env            # Run all tests
-```
-
-### Formatting
-
-```bash
-deno fmt                         # Format code (uses single quotes)
+bun install
+bun run cron:dev                 # One cron run locally, env from .env
+bun run typecheck                # tsc
+bun run format                   # prettier (single quotes)
 ```
 
 ## Architecture
 
-### Workspace Packages (`packages/`)
+- `api/cron.ts`: the Vercel Function that Vercel Cron calls every 10 minutes
+  (`vercel.json`). Rejects requests without `Authorization: Bearer
+  $CRON_SECRET`.
+- `lib/job.ts`: one run:
+  1. List unread entries from rssify, oldest first
+  2. Evaluate interest with an AI agent (score 1-5, threshold >= 4)
+  3. Write and publish one interesting entry to Telegram
+  4. Mark processed entries read in rssify
+- `lib/rssify.ts`: rssify `/api/v1` client (`x-api-key`) and the full-article
+  fetch (Readability) for the writer.
+- `lib/evaluator.ts`, `lib/llm.ts`, `lib/agent.ts`: libfx agents on Claude via
+  AI Gateway.
+- `lib/env.ts`: environment variables with Zod validation.
 
-- **@packages/env**: Centralized environment variables with Zod validation.
-  Import `env` to access typed config.
-- **@packages/bot**: Grammy Telegram bot instance. Exports `bot` for sending
-  messages.
-
-### Apps (`apps/`)
-
-- **webhook**: Cron job that runs every 10 minutes to:
-  1. Fetch unread entries from Miniflux API
-  2. Evaluate interest using AI (score 1-5, threshold >= 4)
-  3. Format and publish one interesting entry to Telegram
-  4. Mark processed entries as read
-  5. Refresh feeds with parsing errors
+Relative imports use the `.js` extension (`moduleResolution: NodeNext`).
+`vercel.json` includes `node_modules/libfx/**` in the function, because its
+native binary and wasm are loaded at runtime and are not traced.
 
 ## Environment Variables
 
-All variables are validated at startup via `@packages/env`.
-
-Required:
+Validated at startup via `lib/env.ts`:
 
 - `BOT_TOKEN` - Telegram bot token
 - `TELEGRAM_CHAT_ID` - Target channel for publishing
-- `MINIFLUX_API_URL` - Miniflux instance URL (e.g.,
-  https://miniflux.example.com)
-- `MINIFLUX_API_KEY` - Miniflux API key for X-Auth-Token header
+- `RSSIFY_API_URL` - rssify instance URL (https://rss.katsuba.dev)
+- `RSSIFY_API_KEY` - rssify API key, sent as `x-api-key`
 - `AI_GATEWAY_API_KEY` - AI Gateway API key for LLM processing
+
+Checked by `api/cron.ts` only:
+
+- `CRON_SECRET` - Vercel sends it as a Bearer token with each cron request

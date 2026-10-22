@@ -1,13 +1,12 @@
-import { runAgent } from './agent.ts';
-import { AUDIENCE } from './audience.ts';
-import { fetchEntryContent, markAsRead } from './miniflux.ts';
-import { sendToTelegram } from './telegram.ts';
-import { validatePost } from './validate.ts';
-import type { ProcessableEntry } from './types.ts';
+import { runAgent } from './agent.js';
+import { AUDIENCE } from './audience.js';
+import { fetchArticle, markAsRead } from './rssify.js';
+import { sendToTelegram } from './telegram.js';
+import { validatePost } from './validate.js';
+import type { ProcessableEntry } from './types.js';
 
 export type PublishResult =
-  | { status: 'published' }
-  | { status: 'rejected'; reason: string };
+  { status: 'published' } | { status: 'rejected'; reason: string };
 
 const postSchema = {
   type: 'object',
@@ -71,7 +70,7 @@ export async function processEntry(
           additionalProperties: false,
         },
         idempotent: true,
-        execute: () => fetchEntryContent(entry.id),
+        execute: () => fetchArticle(entry.url),
       },
       {
         name: 'validate_post',
@@ -101,7 +100,7 @@ export async function processEntry(
           await sendToTelegram(markdown);
           result = { status: 'published' };
           // Mark read right away so a later failure in the turn can't republish it
-          await markAsRead([entry.id]);
+          await markAsRead(entry.id);
           return 'Published.';
         },
       },

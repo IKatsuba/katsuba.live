@@ -11,7 +11,8 @@ export function validatePost(markdown: string, url: string): ValidationResult {
   const title = lines[0] ?? '';
 
   if (
-    !/^(\*\*|#{1,3} )/.test(title) || !/\p{Extended_Pictographic}/u.test(title)
+    !/^(\*\*|#{1,3} )/.test(title) ||
+    !/\p{Extended_Pictographic}/u.test(title)
   ) {
     problems.push(
       'The first line must be a title with an emoji, in bold or as a heading.',

@@ -1,5 +1,5 @@
 import { createFxEngine, type FxModelOptions, type FxTool } from 'libfx';
-import { env } from '@packages/env';
+import { env } from './env.js';
 
 const MAX_TOOL_CALLS = 12;
 

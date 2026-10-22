@@ -1,6 +1,6 @@
 import { splitMessage, toTelegramMarkdownV2 } from 'md-to-telegram';
-import { bot } from '@packages/bot';
-import { env } from '@packages/env';
+import { bot } from './bot.js';
+import { env } from './env.js';
 
 export async function sendToTelegram(markdown: string): Promise<void> {
   const { text } = toTelegramMarkdownV2(markdown);

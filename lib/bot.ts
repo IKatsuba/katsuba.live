@@ -1,4 +1,4 @@
 import { Bot } from 'grammy';
-import { env } from '@packages/env';
+import { env } from './env.js';
 
 export const bot = new Bot(env.BOT_TOKEN);

@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { runAgent } from './agent.ts';
-import { AUDIENCE } from './audience.ts';
-import type { EvaluationResult, ProcessableEntry } from './types.ts';
+import { runAgent } from './agent.js';
+import { AUDIENCE } from './audience.js';
+import type { EvaluationResult, ProcessableEntry } from './types.js';
 
 const EvaluationSchema = z.object({
   score: z.number().int().min(1).max(5).describe('Interest score from 1 to 5'),
@@ -36,24 +36,27 @@ Your own knowledge of versions, release dates and projects is out of date, and t
 
 Write the reason first, naming the topic and why it does or does not fit the audience, then the score. Report it by calling submit_evaluation exactly once.`,
     ],
-    tools: [{ name: 'web_search', providerExecuted: true }, {
-      name: 'submit_evaluation',
-      description: 'Submits the justification and the final interest score.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          reason: { type: 'string' },
-          score: { type: 'integer', minimum: 1, maximum: 5 },
+    tools: [
+      { name: 'web_search', providerExecuted: true },
+      {
+        name: 'submit_evaluation',
+        description: 'Submits the justification and the final interest score.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            reason: { type: 'string' },
+            score: { type: 'integer', minimum: 1, maximum: 5 },
+          },
+          required: ['reason', 'score'],
+          additionalProperties: false,
         },
-        required: ['reason', 'score'],
-        additionalProperties: false,
+        idempotent: true,
+        execute: (input: unknown) => {
+          evaluation = EvaluationSchema.parse(input);
+          return 'Evaluation recorded.';
+        },
       },
-      idempotent: true,
-      execute: (input: unknown) => {
-        evaluation = EvaluationSchema.parse(input);
-        return 'Evaluation recorded.';
-      },
-    }],
+    ],
     prompt: `Evaluate this news:
 
 Title: ${entry.title}
