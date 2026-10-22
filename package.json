@@ -13,6 +13,7 @@
     "libfx": "0.0.14",
     "linkedom": "^0.18.12",
     "md-to-telegram": "^0.1.1",
+    "undici": "^7",
     "zod": "^3.23.0"
   },
   "devDependencies": {
