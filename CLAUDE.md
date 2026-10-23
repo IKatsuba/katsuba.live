@@ -47,7 +47,8 @@ Validated at startup via `lib/env.ts`:
 - `RSSIFY_API_URL` - rssify instance URL (https://rss.katsuba.dev)
 - `RSSIFY_API_KEY` - rssify API key, sent as `x-api-key`
 - `AI_GATEWAY_API_KEY` - optional AI Gateway key; without it the Vercel OIDC
-  token is used (`VERCEL_OIDC_TOKEN` locally, from `vercel env pull`)
+  token is used (`VERCEL_OIDC_TOKEN` locally: `vercel env pull .env.local
+  --environment development`; it expires after 12 hours)
 
 Checked by `api/cron.ts` only:
 
