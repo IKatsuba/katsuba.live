@@ -6,7 +6,6 @@ Core topics:
 - Backend on Node.js and Deno: runtimes, server frameworks, databases
 - AI for developers: LLMs, agents, AI tooling used in day-to-day engineering
 - DevOps and infrastructure: cloud, CI/CD, containers
-- GitHub trending: repositories trending on GitHub that developers can use or learn from — libraries, frameworks, developer tools, AI agents and tooling. Such a repository in or near the core topics is worth at least a 4. The entry's date is when it started trending, so the age of the repository itself does not make it outdated. Repositories that are not for developers (games, toys, personal configs, link collections) stay low, and so do household names every developer already knows (Node.js, React, Claude Code): trending alone is not news for them.
 
 The audience does NOT want:
 - Business and finance: funding rounds, layoffs, stock moves, company rumors

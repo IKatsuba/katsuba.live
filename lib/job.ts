@@ -1,11 +1,28 @@
 import { evaluateEntry } from './evaluator.js';
 import { processEntry } from './llm.js';
 import { getEntry, getUnreadEntries, markAsRead } from './rssify.js';
-import type { ProcessableEntry, RssifyEntry } from './types.js';
+import type {
+  EvaluationResult,
+  ProcessableEntry,
+  RssifyEntry,
+} from './types.js';
 
 // Stop picking up new entries well before the function's maxDuration, so a
 // running evaluation or post has time to finish; the rest waits for the next run.
 const TIME_BUDGET_MS = 180_000;
+
+// Every GitHub trending repository is published; the evaluator does not judge
+// them.
+const TRENDING_EVALUATION: EvaluationResult = {
+  score: 5,
+  reason:
+    'A repository trending on GitHub. The channel publishes every trending repository: tell readers what it is and who it is for.',
+  shouldPublish: true,
+};
+
+function isGitHubTrending(entry: RssifyEntry): boolean {
+  return entry.feedTitle?.startsWith('GitHub trending') ?? false;
+}
 
 function mapToProcessableEntry(
   entry: RssifyEntry & { url: string },
@@ -44,7 +61,9 @@ async function processOneEntry(): Promise<void> {
 
     const processable = mapToProcessableEntry({ ...entry, url: entry.url });
 
-    const evaluation = await evaluateEntry(processable);
+    const evaluation = isGitHubTrending(entry)
+      ? TRENDING_EVALUATION
+      : await evaluateEntry(processable);
     console.log(
       `Entry ${entry.id}: score=${evaluation.score}, reason="${evaluation.reason}"`,
     );
