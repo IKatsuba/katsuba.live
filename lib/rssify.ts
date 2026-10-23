@@ -62,6 +62,9 @@ export async function markAsRead(entryId: string): Promise<void> {
 // public internet and reads a bounded amount of HTML.
 const MAX_ARTICLE_BYTES = 5 * 1024 * 1024;
 const MAX_REDIRECTS = 5;
+// libfx refuses an oversized tool result, and a long README or article needs
+// no more than this for a short post.
+const MAX_ARTICLE_CHARS = 30_000;
 
 // Anything but a public unicast address: private, loopback, link-local,
 // reserved, NAT64/6to4/Teredo and the rest of ipaddr.js's special ranges.
@@ -167,9 +170,12 @@ export async function fetchArticle(articleUrl: string): Promise<string> {
   const { document } = parseHTML(await readLimited(response));
   const article = new Readability(document).parse();
 
-  if (!article?.content) {
+  const text = article?.textContent?.replace(/\n\s*\n\s*/g, '\n\n').trim();
+  if (!text) {
     throw new Error(`No readable article at ${url}`);
   }
 
-  return article.content;
+  return text.length > MAX_ARTICLE_CHARS
+    ? `${text.slice(0, MAX_ARTICLE_CHARS)}\n\n[Article truncated]`
+    : text;
 }
