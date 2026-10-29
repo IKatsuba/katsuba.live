@@ -17,7 +17,7 @@ export async function evaluateEntry(
 
   await runAgent({
     label: `evaluate:${entry.id}`,
-    model: { id: 'anthropic/claude-haiku-5.5', effort: 'medium' },
+    model: { id: 'vmc/katsuba-live-evaluator' },
     instructions: [
       `You are the editor of an IT/tech Telegram channel and decide which news reaches the readers. Most entries in the feed should not be published: be strict.
 

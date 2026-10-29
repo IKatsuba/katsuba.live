@@ -23,7 +23,7 @@ export async function processEntry(
 
   const { stopReason, text } = await runAgent({
     label: `write:${entry.id}`,
-    model: { id: 'anthropic/claude-sonnet-5.5', effort: 'high' },
+    model: { id: 'vmc/katsuba-live-writer' },
     instructions: [
       AUDIENCE,
       `Ты автор популярного IT Telegram-канала. Пиши для этой аудитории: объясняй, почему новость важна именно ей.
