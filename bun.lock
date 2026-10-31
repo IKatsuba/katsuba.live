@@ -9,7 +9,7 @@
         "@vercel/oidc": "^4.0.3",
         "grammy": "^1.44.0",
         "ipaddr.js": "^2.5.0",
-        "libfx": "0.0.15",
+        "libfx": "0.0.16",
         "linkedom": "^0.18.12",
         "md-to-telegram": "^0.1.1",
         "undici": "^7",
@@ -79,6 +79,14 @@
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.28.2", "", { "os": "win32", "cpu": "x64" }, "sha512-5ebpxr3nWMzrL/rnUI755Jkuee0bHL/Gq0WTF9lvcpv73wAp5eu8MfBUgWK9bhWvZjj7yX8etf/8tI8Ney695g=="],
 
     "@grammyjs/types": ["@grammyjs/types@5.0.0", "", {}, "sha512-iq1Qrq1iPKkB8yAa0qSuIURMZOCuqTY5pWy5gHpCeL1oQ+GPadGhw/cDTVE8waJwuCzacUzuIjRv1sESvk7u7A=="],
+
+    "@libfx/libfx-darwin-arm64": ["@libfx/libfx-darwin-arm64@0.0.16", "", { "os": "darwin", "cpu": "arm64" }, "sha512-u4kmCFbVpOE9JdMDCi04c7LeOH6uKIJKpkDUxq1RyhW81Rx4MiI/5XtSXw702WIbxX57R5csOFvOp8uPDwzTEQ=="],
+
+    "@libfx/libfx-darwin-x64": ["@libfx/libfx-darwin-x64@0.0.16", "", { "os": "darwin", "cpu": "x64" }, "sha512-LsbtrtH+Qnk4hCOw03SvYxNlyBtU+aIGr2CHjsogbNI2lfN4QZLp5eP3l84EFouVAgJzwFrMzJGlUGmyIc/zkw=="],
+
+    "@libfx/libfx-linux-arm64-gnu": ["@libfx/libfx-linux-arm64-gnu@0.0.16", "", { "os": "linux", "cpu": "arm64", "libc": "glibc" }, "sha512-8OeEF5y9mzGcG4eLmCYbaVO5jnVMF9GTdTLpu3ftSixhlt/nvxNjMJl6/+TGzHSQtUewNxR6aM820Hl4NW2PIw=="],
+
+    "@libfx/libfx-linux-x64-gnu": ["@libfx/libfx-linux-x64-gnu@0.0.16", "", { "os": "linux", "cpu": "x64", "libc": "glibc" }, "sha512-JAz5lUwGTTVqmVDT6p0a2o4m7lOFBPU+i3sYYYw3r+FQUPY+cV0r/AnXY40edA1ICf00EHlH9Okna5gWBr/Zyg=="],
 
     "@mozilla/readability": ["@mozilla/readability@0.6.0", "", {}, "sha512-juG5VWh4qAivzTAeMzvY9xs9HY5rAcr2E4I7tiSSCokRFi7XIZCAu92ZkSTsIj1OPceCifL3cpfteP3pDT9/QQ=="],
 
@@ -172,7 +180,7 @@
 
     "katex": ["katex@0.16.47", "", { "dependencies": { "commander": "^8.3.0" }, "bin": { "katex": "cli.js" } }, "sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg=="],
 
-    "libfx": ["libfx@0.0.15", "", {}, "sha512-/m0eeTxPYvuPMG7afKn65kwryfkCehGkwvyEh6LCVBXzNSTSdYIO9o0y0FluzPUgt15xVneMdMiViko4spMP0A=="],
+    "libfx": ["libfx@0.0.16", "", { "optionalDependencies": { "@libfx/libfx-darwin-arm64": "0.0.16", "@libfx/libfx-darwin-x64": "0.0.16", "@libfx/libfx-linux-arm64-gnu": "0.0.16", "@libfx/libfx-linux-x64-gnu": "0.0.16" } }, "sha512-qA/b37rsJ8DNJXkg1+iyQCmzBbiXO+2lCXtdZzP6GjVPcStJEb3QkmhXEpOURb+VCfNc7L9gB6TiTXeS3/CPXQ=="],
 
     "linkedom": ["linkedom@0.18.14", "", { "dependencies": { "@acemir/cssom": "^0.9.32", "css-select": "^7.0.0", "html-escaper": "^3.0.3", "htmlparser2": "^10.1.0", "uhyphen": "^0.2.0" }, "peerDependencies": { "canvas": ">= 2" }, "optionalPeers": ["canvas"] }, "sha512-BRUnkOm4YR5vo+qI3j0EbungB0vZPSCue5AdnTQRaxAGSbsOZiBFRO0rh4zlo8qXUhli8pxvnpEXDklMnlq2Rg=="],
 

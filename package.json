@@ -12,7 +12,7 @@
     "@vercel/oidc": "^4.0.3",
     "grammy": "^1.44.0",
     "ipaddr.js": "^2.5.0",
-    "libfx": "0.0.15",
+    "libfx": "0.0.16",
     "linkedom": "^0.18.12",
     "md-to-telegram": "^0.1.1",
     "undici": "^7",

@@ -35,7 +35,7 @@ bun run format                   # prettier (single quotes)
 - `lib/env.ts`: environment variables with Zod validation.
 
 Relative imports use the `.js` extension (`moduleResolution: NodeNext`).
-`vercel.json` includes `node_modules/libfx/**` in the function, because its
+`vercel.json` includes `libfx` and `@libfx` from `node_modules` in the function, because its
 native binary and wasm are loaded at runtime and are not traced.
 
 ## Environment Variables
