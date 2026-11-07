@@ -2,7 +2,7 @@ import { runAgent } from './agent.js';
 import { markAsRead } from './rssify.js';
 import { sendAudioToTelegram } from './telegram.js';
 import { validatePost } from './validate.js';
-import type { ProcessableEntry, RssifyEntry } from './types.js';
+import type { ProcessableEntry } from './types.js';
 
 // katsuba.fm is the author's weekly news podcast. Every episode is published as
 // an audio post; the evaluator does not judge it.
@@ -11,12 +11,15 @@ const PODCAST_HOST = new URL(PODCAST_FEED_URL).host;
 const MAX_TRANSCRIPT_CHARS = 30_000;
 
 export type Episode = {
+  title: string;
+  notes: string;
   audioUrl: string;
   transcript: string | null;
 };
 
-export function isPodcastEpisode(entry: RssifyEntry): boolean {
-  return entry.url !== null && new URL(entry.url).host === PODCAST_HOST;
+// Only a candidate: any feed can link here, so fetchEpisode() decides
+export function isPodcastLink(url: string): boolean {
+  return URL.canParse(url) && new URL(url).host === PODCAST_HOST;
 }
 
 const unescapeXml = (value: string) =>
@@ -37,9 +40,12 @@ async function fetchText(url: string): Promise<string> {
   return response.text();
 }
 
-// rssify keeps neither the audio file nor the transcript, so both come from
-// the episode's item in the podcast feed.
-export async function fetchEpisode(episodeUrl: string): Promise<Episode> {
+// The episode is read from the podcast's own feed, not from the rssify entry:
+// rssify keeps neither the audio nor the transcript, and only an item of this
+// feed is an episode. Returns null when the link is not an episode.
+export async function fetchEpisode(
+  episodeUrl: string,
+): Promise<Episode | null> {
   const feed = await fetchText(PODCAST_FEED_URL);
   const item = feed
     .split('<item>')
@@ -47,14 +53,15 @@ export async function fetchEpisode(episodeUrl: string): Promise<Episode> {
     .find((item) =>
       item.includes(`<link>${episodeUrl.replace(/&/g, '&amp;')}</link>`),
     );
-  if (!item) {
-    throw new Error(`Episode ${episodeUrl} is not in ${PODCAST_FEED_URL}`);
+  const title = item?.match(/<title>([^<]*)<\/title>/)?.[1];
+  const audio = item?.match(/<enclosure\s[^>]*url="([^"]+)"/)?.[1];
+  if (!item || !title || !audio) {
+    return null;
   }
-
-  const audio = item.match(/<enclosure\s[^>]*url="([^"]+)"/)?.[1];
-  if (!audio) {
-    throw new Error(`Episode ${episodeUrl} has no audio enclosure`);
-  }
+  const notes =
+    item.match(
+      /<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/,
+    )?.[1] ?? '';
 
   const transcriptUrl = item.match(
     /<podcast:transcript\s[^>]*url="([^"]+)"/,
@@ -74,7 +81,12 @@ export async function fetchEpisode(episodeUrl: string): Promise<Episode> {
     }
   }
 
-  return { audioUrl: unescapeXml(audio), transcript };
+  return {
+    title: unescapeXml(title),
+    notes,
+    audioUrl: unescapeXml(audio),
+    transcript,
+  };
 }
 
 // Telegram limits an audio caption to 1024 characters of visible text; link
@@ -95,8 +107,10 @@ const postSchema = {
   additionalProperties: false,
 };
 
-export async function publishEpisode(entry: ProcessableEntry): Promise<void> {
-  const episode = await fetchEpisode(entry.url);
+export async function publishEpisode(
+  entry: ProcessableEntry,
+  episode: Episode,
+): Promise<void> {
   let published = false;
 
   const validate = (markdown: string) => {
@@ -156,7 +170,7 @@ export async function publishEpisode(entry: ProcessableEntry): Promise<void> {
             );
           }
           await sendAudioToTelegram(episode.audioUrl, markdown, {
-            title: entry.title,
+            title: episode.title,
             performer: entry.feed.title,
           });
           published = true;
@@ -168,12 +182,12 @@ export async function publishEpisode(entry: ProcessableEntry): Promise<void> {
     ],
     prompt: `Напиши подпись к выпуску и опубликуй его:
 
-Заголовок: ${entry.title}
+Заголовок: ${episode.title}
 URL: ${entry.url}
 Дата: ${entry.published_at}
 
 Описание выпуска:
-${entry.content}
+${episode.notes}
 
 Расшифровка выпуска:
 ${episode.transcript ?? '(расшифровки нет, пиши по описанию)'}`,

@@ -1,6 +1,6 @@
 import { evaluateEntry } from './evaluator.js';
 import { processEntry } from './llm.js';
-import { isPodcastEpisode, publishEpisode } from './podcast.js';
+import { fetchEpisode, isPodcastLink, publishEpisode } from './podcast.js';
 import { getEntry, getUnreadEntries, markAsRead } from './rssify.js';
 import type {
   EvaluationResult,
@@ -62,8 +62,11 @@ async function processOneEntry(): Promise<void> {
 
     const processable = mapToProcessableEntry({ ...entry, url: entry.url });
 
-    if (isPodcastEpisode(entry)) {
-      await publishEpisode(processable);
+    const episode = isPodcastLink(entry.url)
+      ? await fetchEpisode(entry.url)
+      : null;
+    if (episode) {
+      await publishEpisode(processable, episode);
       console.log(`Published podcast episode ${entry.id} to Telegram`);
       return;
     }
