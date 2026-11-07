@@ -13,3 +13,20 @@ export async function sendToTelegram(markdown: string): Promise<void> {
     });
   }
 }
+
+// Telegram downloads the file itself from the URL (up to 20 MB)
+export async function sendAudioToTelegram(
+  audioUrl: string,
+  caption: string,
+  meta: { title: string; performer: string },
+): Promise<void> {
+  const { text } = toTelegramMarkdownV2(caption);
+
+  await bot.api.sendAudio(env.TELEGRAM_CHAT_ID, audioUrl, {
+    caption: text,
+    parse_mode: 'MarkdownV2',
+    title: meta.title,
+    performer: meta.performer,
+    disable_notification: true,
+  });
+}

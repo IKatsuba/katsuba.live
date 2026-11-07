@@ -28,6 +28,10 @@ bun run format                   # prettier (single quotes)
   2. Evaluate interest with an AI agent (score 1-5, threshold >= 4)
   3. Write and publish one interesting entry to Telegram
   4. Mark processed entries read in rssify
+- `lib/podcast.ts`: episodes of the author's weekly podcast katsuba.fm skip
+  the evaluator and go out as an audio post. The mp3 and the transcript come
+  from the episode's item in https://fm.katsuba.dev/feed.xml
+  (`podcast:transcript`, built by the katsuba.fm repo).
 - `lib/rssify.ts`: rssify `/api/v1` client (`x-api-key`) and the full-article
   fetch (Readability) for the writer.
 - `lib/evaluator.ts`, `lib/llm.ts`, `lib/agent.ts`: libfx agents on Claude via
@@ -35,8 +39,9 @@ bun run format                   # prettier (single quotes)
 - `lib/env.ts`: environment variables with Zod validation.
 
 Relative imports use the `.js` extension (`moduleResolution: NodeNext`).
-`vercel.json` includes `libfx` and `@libfx` from `node_modules` in the function, because its
-native binary and wasm are loaded at runtime and are not traced.
+`vercel.json` includes `libfx` and `@libfx` from `node_modules` in the
+function, because its native binary and wasm are loaded at runtime and are not
+traced.
 
 ## Environment Variables
 

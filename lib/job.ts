@@ -1,5 +1,6 @@
 import { evaluateEntry } from './evaluator.js';
 import { processEntry } from './llm.js';
+import { isPodcastEpisode, publishEpisode } from './podcast.js';
 import { getEntry, getUnreadEntries, markAsRead } from './rssify.js';
 import type {
   EvaluationResult,
@@ -60,6 +61,12 @@ async function processOneEntry(): Promise<void> {
     }
 
     const processable = mapToProcessableEntry({ ...entry, url: entry.url });
+
+    if (isPodcastEpisode(entry)) {
+      await publishEpisode(processable);
+      console.log(`Published podcast episode ${entry.id} to Telegram`);
+      return;
+    }
 
     const evaluation = isGitHubTrending(entry)
       ? TRENDING_EVALUATION
